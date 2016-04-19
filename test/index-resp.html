@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>responsive grid</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,user-scalable=0,initial-scale=1">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+	<script src="extra-style.dev.js"></script>
+	<script src="style.js"></script>
+
+	<style>
+		body, html {
+			margin: 0;
+			padding: 0;
+		}
+		.container {
+			margin-bottom: 20px;
+		}
+		.container > div, .container2 > div {
+			background-color: #F5DA81;
+		}
+		.container2 > .cell0 > div, .container2 > .cell2 > div {
+			background-color: red;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div>
+			지금까지는 소스코드에 직접 댓글을 넣었습니다. 이제부터는 JSON 데이터 덩어리를 댓글 목록에 렌더해보겠습니다. 최종적으로는 서버에서 데이터가 내려오겠지만, 지금은 소스에 직접 데이터를 넣어봅시다:
+		</div>
+		<div>
+			블로그에 붙일만한 간단하지만 실용적인 댓글상자를 만들어 볼 것입니다. Disqus, LiveFyre, Facebook에서 제공하는 것 같은 실시간 댓글의 간단한 버전이죠.
+		</div>
+		<div>
+			이 튜토리얼을 시작할 때 필요한 건 아니지만, 나중에 실행 중인 서버에 POST 요청을 하는 기능을 추가하게 될 것입니다. 서버를 구성하는 것이 익숙하다면, 본인이 편한 방식대로 서버를 구성해 주세요. 서버사이드에 대한 고민없이 React의 학습 그 자체에 집중하고 싶은 분들을 위해서, 몇 가지 언어로 간단한 서버코드를 작성해 놓았습니다 - JavaScript (Node.js), Python, Ruby, Go, PHP 버전이 있고, GitHub에서 찾아보실 수 있습니다. 소스를 확인하거나 zip 파일을 다운로드하고 시작하세요.
+		</div>
+		<div>
+			그냥 다 생략하고 소스만 보고 싶나요?
+		</div>
+		<div>
+			이 튜토리얼에서는 CDN에 있는 미리 빌드된 JavaScript 파일들을 사용합니다. 선호하는 에디터를 열어, 새로운 HTML 문서를 만드세요:
+		</div>
+		<div>
+			여기서는 ajax 요청 코드를 단순화 하기 위해 jQuery를 넣었지만, 이는 React의 동작에 필수적인 것은 아닙니다.
+		</div>
+	</div>
+	<div class="container2">
+		<div class="cell0">
+			<div>
+				이 튜토리얼을 시작할 때 필요한 건 아니지만, 나중에 실행 중인 서버에 POST 요청을 하는 기능을 추가하게 될 것입니다. 서버를 구성하는 것이 익숙하다면, 본인이 편한 방식대로 서버를 구성해 주세요. 서버사이드에 대한 고민없이 React의 학습 그 자체에 집중하고 싶은 분들을 위해서, 몇 가지 언어로 간단한 서버코드를 작성해 놓았습니다 - JavaScript (Node.js), Python, Ruby, Go, PHP 버전이 있고, GitHub에서 찾아보실 수 있습니다. 소스를 확인하거나 zip 파일을 다운로드하고 시작하세요.
+			</div>
+			<div>
+				그냥 다 생략하고 소스만 보고 싶나요?
+			</div>
+		</div>
+		<div>
+			블로그에 붙일만한 간단하지만 실용적인 댓글상자를 만들어 볼 것입니다. Disqus, LiveFyre, Facebook에서 제공하는 것 같은 실시간 댓글의 간단한 버전이죠.
+		</div>
+		<div class="cell2">
+			<div>
+				지금까지는 소스코드에 직접 댓글을 넣었습니다. 이제부터는 JSON 데이터 덩어리를 댓글 목록에 렌더해보겠습니다. 최종적으로는 서버에서 데이터가 내려오겠지만, 지금은 소스에 직접 데이터를 넣어봅시다:
+			</div>
+			<div>
+				블로그에 붙일만한 간단하지만 실용적인 댓글상자를 만들어 볼 것입니다. Disqus, LiveFyre, Facebook에서 제공하는 것 같은 실시간 댓글의 간단한 버전이죠.
+			</div>
+		</div>
+	</div>
+</body>
+</html>
