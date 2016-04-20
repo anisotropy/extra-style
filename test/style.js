@@ -1,10 +1,23 @@
 $('.box').extraStyle({
-	'width': '300px',
-	'ratio': '0.6',
+	width: '300px',
+	ratio: 0.6,
 	'background-color': 'yellow'
 });
 
+$('.image-wrapper > img').extraStyle({
+	fitted: 'yes'
+});
+
 $.respStyle('320 768 1024 1280');
+
+$('.first-section, .second-section').respStyle({
+	'font-size': '16 30 50 70', // linear px
+	'margin': '0 50 0 60 0 70 0 80 saw max'
+});
+$('.third-section img').respStyle({
+	'float': 'left right left right'
+})
+
 $('.container').respGrid({
 	columns: '1 2 3 4',
 	ratio: 'auto',

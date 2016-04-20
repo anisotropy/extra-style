@@ -9,7 +9,7 @@
 	});
 	$(document).ready(function(){
 		var scrollbar = (window.innerWidth != $(window).outerWidth());
-		var intv = setInterval(function(){
+		setInterval(function(){
 			if(scrollbar && window.innerWidth == $(window).outerWidth()){
 				$(window).trigger('changeScrollbar'); scrollbar = false;
 			} else if(!scrollbar && window.innerWidth != $(window).outerWidth()){
@@ -191,7 +191,7 @@
 	}
 	// common ////
 	function isValid(data){
-		for(prop in data){
+		for(var prop in data){
 			if(data[prop].series.length < _bp.length){
 				console.error('Error: the length of series in '.prop);
 				return false;
