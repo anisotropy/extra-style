@@ -25,7 +25,9 @@
 				$target.css({ 'width': '', 'height': '', 'margin-left': '', 'margin-top': '' });
 				fitAndCrop($target);
 			});
-			$target.load(function(){ fitAndCrop($target); });
+			if($target.width() && $target.height()) fitAndCrop($target);
+			else $target.on('load', function(){ fitAndCrop($target); });
+
 			function fitAndCrop($image){
 				var width = $image.width();
 				var height = $image.height();
