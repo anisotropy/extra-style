@@ -29,10 +29,10 @@
 			else $target.on('load', function(){ fitAndCrop($target); });
 
 			function fitAndCrop($image){
-				var width = $image.width();
-				var height = $image.height();
-				var wrapWidth = $image.parent().width();
-				var wrapHeight = $image.parent().height();
+				var width = getDim($image).width;
+				var height = getDim($image).height;
+				var wrapWidth = getDim($image.parent()).width;
+				var wrapHeight = getDim($image.parent()).height;
 				var ratio = wrapWidth / width;
 				if(height * ratio < wrapHeight){
 					ratio = wrapHeight / height;
