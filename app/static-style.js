@@ -12,7 +12,16 @@
 	}
 	var funcs = {
 		ratio: function($target, value){
-			$target.outerHeight(getDim($target).width * value);
+			var owidth = getDim($target).width;
+			$target.outerHeight(owidth * value);
+			$target.on('resize', function(){
+				var intv = setInterval(function(){
+					if(owidth != getDim($target).width){
+						$target.outerHeight(getDim($target).width * value);
+						clearInterval(intv);
+					}
+				}, 300);
+			});
 			$(window).resize(function(){
 				$target.outerHeight(getDim($target).width * value);
 			});
@@ -21,12 +30,21 @@
 			if(!$target.is('img') || value != 'yes') return;
 			$target.parent().css('overflow', 'hidden');
 			$target.css('width', '100%');
+			var owidth = getDim($target).width;
+			$target.on('load', function(){ fitAndCrop($target); });
 			$(window).resize(function(){
 				$target.css({ 'width': '', 'height': '', 'margin-left': '', 'margin-top': '' });
 				fitAndCrop($target);
 			});
-			if($target.width() && $target.height()) fitAndCrop($target);
-			else $target.on('load', function(){ fitAndCrop($target); });
+			$target.on('resize', function(){
+				var intv = setInterval(function(){
+					if(owidth != getDim($target).width){
+						$target.css({ 'width': '', 'height': '', 'margin-left': '', 'margin-top': '' });
+						fitAndCrop($target);
+						clearInterval(intv);
+					}
+				}, 300);
+			});
 
 			function fitAndCrop($image){
 				var width = getDim($image).width;
