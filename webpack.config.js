@@ -1,4 +1,4 @@
-var webpack = require('webpack');
+//var webpack = require('webpack');
 
 module.exports = {
 	devtool: 'eval-source-map',
@@ -6,10 +6,5 @@ module.exports = {
 	output: {
 		path: __dirname + '/test',
 		filename: 'extra-style.dev.js'
-	},
-	module: {
-		loaders: [
-			{ test: /\.js$/, exclude: /node_modules/, loader: 'babel', query: { presets: ['es2015'] } }
-		]
 	}
 }

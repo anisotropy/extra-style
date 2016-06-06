@@ -6,11 +6,6 @@ module.exports = {
 		path: __dirname + '/build',
 		filename: 'extra-style.min.js'
 	},
-	module: {
-		loaders: [
-			{ test: /\.js$/, exclude: /node_modules/, loader: 'babel', query: { presets: ['es2015'] } }
-		]
-	},
 	plugins: [
 		new webpack.optimize.OccurenceOrderPlugin(),
 		new webpack.optimize.UglifyJsPlugin()

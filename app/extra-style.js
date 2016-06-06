@@ -1,2 +1,2 @@
-import './static-style.js';
-import './resp-style.js';
+require('./static-style.js');
+require('./resp-style.js');
