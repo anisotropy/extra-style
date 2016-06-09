@@ -60,28 +60,26 @@
 	}
 	function setResize($wrap, $target, mode, option){
 		if(option === 'resize' || option === "resize-once"){
-			var oldWidth = getDim($wrap).width;
+			var oldDim = getDim($wrap);
 			var intv = setInterval(function(){
-				var newWidth = getDim($wrap).width;
-				if(oldWidth != newWidth){
+				var newDim = getDim($wrap);
+				if(compareDim(oldDim, newDim, mode) === false){
 					$target.trigger('resize');
 					if(option === 'resize-once') clearInterval(intv);
-					owidth = newWidth;
+					oldDim = newDim;
 				}
 			}, 100);
 		}
 	}
-	function compareDim($one, $other, mode){
-		var one = getDim($one);
-		var other = getDim($other);
+	function compareDim(one, other, mode){
 		if(mode === 'width'){
-			if(one.width == other.width) return true; else false;
+			if(one.width == other.width) return true; else return false;
 		}
 		else if(mode === 'height'){
-			if(one.height == other.height) return true; else false;
+			if(one.height == other.height) return true; else return false;
 		}
 		else {
-			if(one.width == other.height && one.height == other.height) return true; else false;
+			if(one.width == other.height && one.height == other.height) return true; else return false;
 		}
 	}
 })(jQuery);
