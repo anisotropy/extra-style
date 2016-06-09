@@ -25,9 +25,8 @@
 	}}
 	$.fn.respStyle = function(arg){
 		var target = this.selector;
-		$(document).ready(function(){
-			respStyle(target, arg);
-		});
+		if($(target).length) respStyle(target, arg);
+		else $(document).ready(function(){ respStyle(target, arg); });
 	}
 	function respStyle(target, arg){if(target && arg){
 		$(target).each(function(){
@@ -41,9 +40,8 @@
 	}}
 	$.fn.respGrid = function(arg){
 		var target = this.selector;
-		$(document).ready(function(){
-			respGrid(target, arg);
-		});
+		if($(target).length) respGrid(target, arg);
+		else $(document).ready(function(){ respGrid(target, arg); });
 	}
 	function respGrid(target, arg){if(target && arg){
 		$(target).each(function(){

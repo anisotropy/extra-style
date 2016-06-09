@@ -1,9 +1,8 @@
 (function($){
 	$.fn.extraStyle = function(arg, option){
 		var target = this.selector;
-		$(document).ready(function(){
-			extraStyle(target, arg, option);
-		});
+		if($(target).length) extraStyle(target, arg, option);
+		else $(document).ready(function(){ extraStyle(target, arg, option); });
 	}
 	function extraStyle(target, arg, option){if(target && arg){
 		$(target).each(function(){
