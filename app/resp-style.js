@@ -2,16 +2,16 @@
 	var _bp = [320, 768, 1024, 1280];
 	var setScrollbarEvent = false;
 
-	$(window).on('setScrollbarEvent', function(){
+	$(window).on('es-setScrollbarEvent', function(){
 		if(setScrollbarEvent !== false) return;
 		setScrollbarEvent = true;
 
 		var scrollbar = (window.innerWidth != $(window).outerWidth());
 		setInterval(function(){
 			if(scrollbar && window.innerWidth == $(window).outerWidth()){
-				$(window).trigger('changeScrollbar'); scrollbar = false;
+				$(window).trigger('es-changeScrollbar'); scrollbar = false;
 			} else if(!scrollbar && window.innerWidth != $(window).outerWidth()){
-				$(window).trigger('changeScrollbar'); scrollbar = true;
+				$(window).trigger('es-changeScrollbar'); scrollbar = true;
 			}
 		}, 100);
 	});
@@ -26,35 +26,41 @@
 	$.fn.respStyle = function(arg){
 		var target = this.selector;
 		$(document).ready(function(){
-			$(target).each(function(){
-				var $target = $(this);
-				var style = new Style(arg);
-				$target.css(style.css());
-				$(window).resize(function(){
-					$target.css(style.css());
-				});
-			});
+			respStyle(target, arg);
 		});
 	}
+	function respStyle(target, arg){if(target && arg){
+		$(target).each(function(){
+			var $target = $(this);
+			var style = new Style(arg);
+			$target.css(style.css());
+			$(window).resize(function(){
+				$target.css(style.css());
+			});
+		});
+	}}
 	$.fn.respGrid = function(arg){
 		var target = this.selector;
 		$(document).ready(function(){
-			$(target).each(function(){
-				$(this).css('overflow', 'hidden');
-				$(this).children('div').addClass('es').addClass('es-cell').css({float: 'left', overflow: 'hidden'});
-				if($(this).is('.es.es-cell')) $(this).addClass('es-nested');
-				var $target = $(this);
-				var grid = new Grid(arg, $target.children('.es.es-cell').length);
-				grid.adjust($target);
-				$(window).resize(function(){
-					grid.adjust($target);
-				});
-				$(window).on('changeScrollbar', function(){
-					grid.adjust($target, false);
-				});
-			});
+			respGrid(target, arg);
 		});
 	}
+	function respGrid(target, arg){if(target && arg){
+		$(target).each(function(){
+			$(this).css('overflow', 'hidden');
+			$(this).children('div').addClass('es').addClass('es-cell').css({float: 'left', overflow: 'hidden'});
+			if($(this).is('.es.es-cell')) $(this).addClass('es-nested');
+			var $target = $(this);
+			var grid = new Grid(arg, $target.children('.es.es-cell').length);
+			grid.adjust($target);
+			$(window).resize(function(){
+				grid.adjust($target);
+			});
+			$(window).on('es-changeScrollbar', function(){
+				grid.adjust($target, false);
+			});
+		});
+	}}
 
 	// style ////
 	function Style(arg){
