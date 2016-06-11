@@ -1,7 +1,7 @@
 var webpack = require('webpack');
 
 module.exports = {
-	entry: __dirname + '/app/extra-style.js',
+	entry: __dirname + '/app/bundle.js',
 	output: {
 		path: __dirname + '/build',
 		filename: 'extra-style.min.js'

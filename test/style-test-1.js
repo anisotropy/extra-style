@@ -14,7 +14,7 @@
 		gutter: '10 - - 30',
 		cell3: '1 = 2 1',
 		cell4: '1 2 1 4'
-	});
+	}, 'computed');
 
 	$(window).trigger('es-setScrollbarEvent');
 

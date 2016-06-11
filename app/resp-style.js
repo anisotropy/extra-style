@@ -38,18 +38,18 @@
 			});
 		});
 	}}
-	$.fn.respGrid = function(arg){
+	$.fn.respGrid = function(arg, getDimOption){
 		var target = this.selector;
-		if($(target).length) respGrid(target, arg);
-		else $(document).ready(function(){ respGrid(target, arg); });
+		if($(target).length) respGrid(target, arg, getDimOption);
+		else $(document).ready(function(){ respGrid(target, arg, getDimOption); });
 	}
-	function respGrid(target, arg){if(target && arg){
+	function respGrid(target, arg, getDimOption){if(target && arg){
 		$(target).each(function(){
 			$(this).css('overflow', 'hidden');
 			$(this).children('div').addClass('es').addClass('es-cell').css({float: 'left', overflow: 'hidden'});
 			if($(this).is('.es.es-cell')) $(this).addClass('es-nested');
 			var $target = $(this);
-			var grid = new Grid(arg, $target.children('.es.es-cell').length);
+			var grid = new Grid(arg, $target.children('.es.es-cell').length, getDimOption);
 			grid.adjust($target);
 			$(window).resize(function(){
 				grid.adjust($target);
@@ -235,7 +235,7 @@
 	}
 
 	// grid ////
-	function Grid(arg, numCell){
+	function Grid(arg, numCell, getDimOption){
 		var this_data = {
 			columns: [], ratio: [],
 			gutter: {series: [], max: false, func: 'linear'}, //gutter의 unit은 px.
@@ -243,6 +243,7 @@
 		};
 		var this_bp = { bp: undefined, bpi: 0, ww: 0 };
 		var this_current = { columns: 0, ratio: 0, gutter: 0 , cells: new Array(numCell) };
+		this.getDim = undefined;
 		this.adjust = function($target, cell){
 			if(cell === undefined || cell){
 				this.calcCurrent(this_data, this_bp, this_current);
@@ -253,6 +254,8 @@
 		}
 		//initialize ////
 		if(arg){
+			if(getDimOption === undefined) getDimOption = 'clientrect';
+			this.getDim = this.getDimFuncs[getDimOption];
 			this.convToObj(arg, this_data, this_bp);
 			this.postConv(this_data, this_bp);
 		}
@@ -350,7 +353,16 @@
 			$(this).outerWidth(cw*cells[index] + gut*(cells[index]-1));
 		});
 	}
-	Grid.prototype.getDim = function($obj){
-		return $obj[0].getBoundingClientRect();
+	Grid.prototype.getDimFuncs = {
+		clientrect: function($obj){
+			return $obj[0].getBoundingClientRect();
+		},
+		outerrect: function($obj){
+			return { width: $obj.outerWidth(), height: $obj.outerHeight() }
+		},
+		computed: function($obj){
+			var computedStyle = window.getComputedStyle($obj[0]);
+			return { width: parseFloat(computedStyle.width), height: parseFloat(computedStyle.height) };
+		}
 	}
 })(jQuery);

@@ -1,6 +1,6 @@
 $('.box').extraStyle({
 	ratio: 0.6
-}, 'resize');
+}, 'resize', 'computed');
 
 $('.image-wrapper > img').extraStyle({
 	fitted: 'yes'

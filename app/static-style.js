@@ -1,22 +1,23 @@
 (function($){
-	$.fn.extraStyle = function(arg, option){
+	$.fn.extraStyle = function(arg, option, getDimOption){
 		var target = this.selector;
-		if($(target).length) extraStyle(target, arg, option);
-		else $(document).ready(function(){ extraStyle(target, arg, option); });
+		if($(target).length) extraStyle(target, arg, option, getDimOption);
+		else $(document).ready(function(){ extraStyle(target, arg, option, getDimOption); });
 	}
-	function extraStyle(target, arg, option){if(target && arg){
+	function extraStyle(target, arg, option, getDimOption){if(target && arg){
+		if(getDimOption === undefined) getDimOption = 'clientrect';
 		$(target).each(function(){
 			var $target = $(this);
 			for(var prop in arg){
-				if(funcs[prop]) funcs[prop]($target, arg[prop], option);
+				if(funcs[prop]) funcs[prop]($target, arg[prop], option, getDimFuncs[getDimOption]);
 				else $target.css(prop, arg[prop]);
 			}
 		});
 	}}
 	var funcs = {
-		ratio: function($target, value, option){
+		ratio: function($target, value, option, getDim){
 			setHeight();
-			setResize($target, $target, 'width', option);
+			setResize($target, $target, 'width', option, getDim);
 
 			$target.on('resize', setHeight);
 			if(option !== 'resize') $(window).resize(setHeight);
@@ -25,10 +26,10 @@
 				$target.outerHeight(getDim($target).width * value);
 			}
 		},
-		fitted: function($target, value, option){ if($target.is('img') && value === 'yes'){
+		fitted: function($target, value, option, getDim){ if($target.is('img') && value === 'yes'){
 			$target.parent().css('overflow', 'hidden');
 			$target.css('width', '100%');
-			setResize($target.parent(), $target, 'all', option);
+			setResize($target.parent(), $target, 'all', option, getDim);
 
 			$target.on('load', fitAndCrop);
 			$target.on('resize', fitAndCrop);
@@ -36,8 +37,9 @@
 
 			function fitAndCrop(){
 				$target.css({ 'width': '', 'height': '', 'margin-left': '', 'margin-top': '' });
-				var width = getDim($target).width, height = getDim($target).height;
-				var wrapWidth = getDim($target.parent()).width, wrapHeight = getDim($target.parent()).height;
+				var dim = getDim($target), parDim = getDim($target.parent());
+				var width = dim.width, height = dim.height;
+				var wrapWidth = parDim.width, wrapHeight = parDim.height;
 				var ratio = wrapWidth / width;
 				if(height * ratio < wrapHeight){
 					ratio = wrapHeight / height;
@@ -54,10 +56,19 @@
 			}
 		}}
 	}
-	function getDim($obj){
-		return $obj[0].getBoundingClientRect();
+	var getDimFuncs = {
+		clientrect: function($obj){
+			return $obj[0].getBoundingClientRect();
+		},
+		outerrect: function($obj){
+			return { width: $obj.outerWidth(), height: $obj.outerHeight() }
+		},
+		computed: function($obj){
+			var computedStyle = window.getComputedStyle($obj[0]);
+			return { width: parseFloat(computedStyle.width), height: parseFloat(computedStyle.height) };
+		}
 	}
-	function setResize($wrap, $target, mode, option){
+	function setResize($wrap, $target, mode, option, getDim){
 		if(option === 'resize' || option === "resize-once"){
 			var oldDim = getDim($wrap);
 			var intv = setInterval(function(){
