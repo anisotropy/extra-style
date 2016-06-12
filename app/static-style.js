@@ -9,53 +9,53 @@
 		$(target).each(function(){
 			var $target = $(this);
 			for(var prop in arg){
-				if(funcs[prop]) funcs[prop]($target, arg[prop], option, getDimFuncs[getDimOption]);
+				if(prop === 'ratio') ratio($target, arg[prop], option, getDimFuncs[getDimOption]);
+				else if(prop === 'fitted') fitted($target, arg[prop], option, getDimFuncs[getDimOption]);
 				else $target.css(prop, arg[prop]);
 			}
 		});
 	}}
-	var funcs = {
-		ratio: function($target, value, option, getDim){
-			setHeight();
-			setResize($target, $target, 'width', option, getDim);
+	function ratio($target, value, option, getDim){
+		setResize($target, $target, 'width', option, getDim);
+		if(option !== 'wait') setHeight();
+		$target.on('resize', setHeight);
+		$target.on('refresh-set-ratio', setHeight);
+		if(option !== 'resize') $(window).resize(setHeight);
 
-			$target.on('resize', setHeight);
-			if(option !== 'resize') $(window).resize(setHeight);
-
-			function setHeight(){
-				$target.outerHeight(getDim($target).width * value);
-			}
-		},
-		fitted: function($target, value, option, getDim){ if($target.is('img') && value === 'yes'){
-			$target.parent().css('overflow', 'hidden');
-			$target.css('width', '100%');
-			setResize($target.parent(), $target, 'all', option, getDim);
-
-			$target.on('load', fitAndCrop);
-			$target.on('resize', fitAndCrop);
-			if(option !== 'resize') $(window).resize(fitAndCrop);
-
-			function fitAndCrop(){
-				$target.css({ 'width': '', 'height': '', 'margin-left': '', 'margin-top': '' });
-				var dim = getDim($target), parDim = getDim($target.parent());
-				var width = dim.width, height = dim.height;
-				var wrapWidth = parDim.width, wrapHeight = parDim.height;
-				var ratio = wrapWidth / width;
-				if(height * ratio < wrapHeight){
-					ratio = wrapHeight / height;
-					var nH = height * ratio;
-					var nW = width * ratio;
-					$target.css({ width: nW, height: nH });
-					$target.css({ 'margin-left': (wrapWidth-nW)/2, 'margin-top': 0 });
-				} else {
-					var nH = height * ratio;
-					var nW = width * ratio;
-					$target.css({ width: nW, height: nH });
-					$target.css({ 'margin-top': (wrapHeight-nH)/2, 'margin-left': 0 });
-				}
-			}
-		}}
+		function setHeight(){
+			$target.outerHeight(getDim($target).width * value);
+		}
 	}
+	function fitted($target, value, option, getDim){ if($target.is('img') && value === 'yes'){
+		$target.parent().css('overflow', 'hidden');
+		$target.css('width', '100%');
+		setResize($target.parent(), $target, 'all', option, getDim);
+
+		if(option !== 'wait') $target.on('load', fitAndCrop);
+		$target.on('resize', fitAndCrop);
+		$target.on('refresh-fitting-image', fitAndCrop);
+		if(option !== 'resize') $(window).resize(fitAndCrop);
+
+		function fitAndCrop(){
+			$target.css({ 'width': '', 'height': '', 'margin-left': '', 'margin-top': '' });
+			var dim = getDim($target), parDim = getDim($target.parent());
+			var width = dim.width, height = dim.height;
+			var wrapWidth = parDim.width, wrapHeight = parDim.height;
+			var ratio = wrapWidth / width;
+			if(height * ratio < wrapHeight){
+				ratio = wrapHeight / height;
+				var nH = height * ratio;
+				var nW = width * ratio;
+				$target.css({ width: nW, height: nH });
+				$target.css({ 'margin-left': (wrapWidth-nW)/2, 'margin-top': 0 });
+			} else {
+				var nH = height * ratio;
+				var nW = width * ratio;
+				$target.css({ width: nW, height: nH });
+				$target.css({ 'margin-top': (wrapHeight-nH)/2, 'margin-left': 0 });
+			}
+		}
+	}}
 	var getDimFuncs = {
 		clientrect: function($obj){
 			return $obj[0].getBoundingClientRect();
