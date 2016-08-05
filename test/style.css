@@ -1,0 +1,30 @@
+body, html {
+	margin: 0;
+	padding: 0;
+}
+.box {
+	width: 40%;
+	background-color: #2E9AFE;
+	margin-bottom: 5%;
+}
+.image-wrapper {
+	width: 400px;
+	height: 200px;
+}
+.third-section, .container, .container2 {
+	margin-bottom: 5%;
+}
+.cell {
+	background-color: #F5DA81;
+}
+.cell-in-cell {
+	background-color: #FE642E;
+}
+.first-section {
+	font-family: 'Candal', sans-serif;
+	padding-top: 50px;
+	padding-bottom: 50px;
+	text-align: center;
+	background-color: #F7BE81;
+	overflow: hidden;
+}

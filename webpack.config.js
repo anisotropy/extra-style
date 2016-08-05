@@ -1,10 +1,10 @@
-//var webpack = require('webpack');
+var config = require('./config.js');
 
 module.exports = {
 	devtool: 'eval-source-map',
-	entry: __dirname + '/app/bundle.js',
+	entry: config.entry,
 	output: {
-		path: __dirname + '/test',
-		filename: 'bundle.js'
+		path: __dirname + '/build',
+		filename: 'extra-style.js'
 	}
-}
+};

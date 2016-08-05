@@ -1,60 +1,43 @@
 (function($){
-	var _bp = [320, 768, 1024, 1280];
-	var setScrollbarEvent = false;
+	var _globalBreakPoint = [320, 768, 1024, 1280];
 
-	$(window).on('es-setScrollbarEvent', function(){
-		if(setScrollbarEvent !== false) return;
-		setScrollbarEvent = true;
-
-		var scrollbar = (window.innerWidth != $(window).outerWidth());
-		setInterval(function(){
-			if(scrollbar && window.innerWidth == $(window).outerWidth()){
-				$(window).trigger('es-changeScrollbar'); scrollbar = false;
-			} else if(!scrollbar && window.innerWidth != $(window).outerWidth()){
-				$(window).trigger('es-changeScrollbar'); scrollbar = true;
-			}
-		}, 100);
-	});
 	$.respStyle = function(arg){if(arg){
 		var array = arg.split(' ');
 		if(array.length < 2){ console.error('Error: the length of break points'); return false; }
-		_bp = [];
+		_globalBreakPoint = [];
 		for(var i = 0, len = array.length; i < len; i++){
-			if($.isNumeric(array[i])) _bp.push(parseFloat(array[i]));
+			if($.isNumeric(array[i])) _globalBreakPoint.push(parseFloat(array[i]));
 		}
 	}}
-	$.fn.respStyle = function(arg){
-		var target = this;
-		if($(target).length) respStyle(target, arg);
-		else $(document).ready(function(){ respStyle(target.selector, arg); });
-	}
-	function respStyle(target, arg){if(target && arg){
-		$(target).each(function(){
-			var $target = $(this);
-			var style = new Style(arg);
-			if($(this).is(':visible')) $target.css(style.css());
-			$(window).resize(function(){ if($target.is(':visible')) $target.css(style.css()); });
-			$target.on('refresh', function(){ if($target.is(':visible')) $target.css(style.css()); });
+	$.fn.respStyle = function(arg){ if(arg){
+		return this.each(function(){
+			respStyle($(this), arg);
 		});
 	}}
-	$.fn.respGrid = function(arg, getDimOption){
-		var target = this;
-		if($(target).length) respGrid(target, arg, getDimOption);
-		else $(document).ready(function(){ respGrid(target.selector, arg, getDimOption); });
+	function respStyle($target, arg){
+		var style = new Style(arg);
+		if($target.is(':visible')) $target.css(style.css());
+		$(window).resize(function(){ if($target.is(':visible')) $target.css(style.css()); });
+		$target.on('refresh', function(){ if($target.is(':visible')) $target.css(style.css()); });
 	}
-	function respGrid(target, arg, getDimOption){if(target && arg){
-		$(target).each(function(){
-			var $target = $(this);
-			$target.css('overflow', 'hidden');
-			$target.children('div').addClass('es').addClass('es-cell').css({float: 'left', overflow: 'hidden'});
-			if($target.is('.es.es-cell')) $target.addClass('es-nested');
-			var grid = new Grid(arg, $target.children('.es.es-cell').length, getDimOption);
-			if($target.is(':visible')) grid.adjust($target);
-			$(window).resize(function(){ grid.adjust($target); });
-			$target.on('refresh', function(){ grid.adjust($target); });
-			$(window).on('es-changeScrollbar', function(){ grid.adjust($target, false); });
+	$.fn.respGrid = function(arg, getDimOption){ if(arg){
+		return this.each(function(){
+			respGrid($(this), arg, getDimOption);
 		});
 	}}
+	function respGrid($target, arg, getDimOption){
+		$target.css({ 'overflow': 'hidden'});
+		$target.children('div').each(function(){
+			$('<div></div>').css({
+				float: 'left', overflow: 'hidden', 'box-sizing': 'border-box'
+			}).insertAfter($(this)).append($(this));
+			$(this).css({ width: '100%', height: '100%', overflow: 'hidden' });
+		});
+		var grid = new Grid(arg, $target.children().length, getDimOption);
+		if($target.is(':visible')) grid.adjust($target);
+		$(window).resize(function(){ grid.adjust($target); });
+		$target.on('refresh', function(){ grid.adjust($target); });
+	}
 
 	// style ////
 	function Style(arg){
@@ -74,14 +57,14 @@
 	Style.prototype.convToObj = function(arg, data, bp){
 		for(var prop in arg){
 			if(prop !== 'breakpoint'){
-				data[prop] = { series: [], max: false, unit: 'px', func: 'linear'};
+				data[prop] = { series: [], max: true, unit: 'px', func: 'linear'};
 				this.convToObjEach(arg[prop], data[prop]);
 			} else {
 				bp.bp = [];
 				this.convToObjEach(arg[prop], bp.bp);
 			}
 		}
-		if(bp.bp === undefined) bp.bp = _bp;
+		if(bp.bp === undefined) bp.bp = _globalBreakPoint;
 	}
 	Style.prototype.convToObjEach = function(propOfArg, propOfData){
 		var array = propOfArg.split(' ');
@@ -92,7 +75,7 @@
 				else if(array[i] === '-' || array[i] === '=') propOfData.series.push(array[i]);
 				else if(this.isNotNumVal(array[i])) propOfData.series.push(array[i]);
 				else if(this.isUnit(array[i])) propOfData.unit = array[i];
-				else if(array[i] === 'max') propOfData.max = true;
+				else if(array[i] === 'conti') propOfData.max = false;
 				else if(array[i] === 'linear' || array[i] === 'step' || array[i] === 'saw') propOfData.func = array[i];
 			}
 		} else if($.type(propOfData) === 'array'){
@@ -222,8 +205,8 @@
 		if($.inArray(unit, units) > -1) return true; else return false;
 	}
 	Style.prototype.isNotNumVal = function(value){
-		var values = ['left', 'right', 'none', 'absolute', 'fixed', 'static', 'hidden', 'scroll', 'auto',
-			'block', 'inline', 'inline-block'];
+		var values = ['left', 'right', 'none', 'absolute', 'fixed', 'static', 'hidden', 'scroll', 'auto', 'inherited',
+			'none', 'block', 'inline', 'inline-block'];
 		if($.inArray(value, values) > -1) return true; else return false;
 	}
 	Style.prototype.isNotNumProp = function(prop){
@@ -255,6 +238,9 @@
 			this.getDim = this.getDimFuncs[getDimOption];
 			this.convToObj(arg, this_data, this_bp);
 			this.postConv(this_data, this_bp);
+			for(var i = 0, len = this_data.columns.length; i < len; i++){
+				this_data.columns[i] = Math.floor(this_data.columns[i]);
+			}
 		}
 	}
 	Grid.prototype = new Style();
@@ -262,7 +248,7 @@
 		if(arg.breakpoint){
 			bp.bp = []; this.convToObjEach(arg.breakpoint, bp.bp);
 		} else {
-			bp.bp = _bp;
+			bp.bp = _globalBreakPoint;
 		}
 		for(var prop in arg){
 			if(data[prop]) this.convToObjEach(arg[prop], data[prop]);
@@ -310,48 +296,58 @@
 		var gut = current.gutter;
 		var cols = current.columns;
 		var cells = current.cells;
-		var $cells = $target.children('.es.es-cell');
+		var $cells = $target.children();
 		var length = $cells.length;
-		var cw = (grid.getDim($target).width - gut*(cols-1))/cols;
+		var rows = Math.ceil(length / cols);
+		var cw = 100 / cols;
 		var maxCh = 0;
-		$cells.css({'margin-right': 0, 'margin-top': 0});
-		if(current.ratio !== 'auto') $cells.css({width: 0, height: 0});
-		else $cells.css({width: 0, height: 0});
+		var addi = 0;
+		$cells.css({ 'padding-left': '', 'padding-right': '', 'padding-top': '', 'padding-bottom': '' });
+		if(current.ratio === 'auto'){
+			$cells.css('height', '');
+		} else if(current.ratio === 'inherited'){
+			$cells.css('height', (100/rows)+'%');
+		} else {
+			$target.outerHeight(grid.getDim($target).width * current.ratio);
+			$cells.css('height', (100/rows)+'%');
+		}
 		$cells.each(function(index){
-			$(this).outerWidth(cw*cells[index] + gut*(cells[index]-1));
-			if((index+1) % cols !== 0 && index < length-1) $(this).css({'margin-right': gut});
-			if(index >= cols) $(this).css({'margin-top': gut});
+			var pi = index % cols;
+			if(pi === 0) addi = 0;
+			pi += addi;
+			$(this).css('padding-left', gut*pi/cols);
+			addi += cells[index]-1;
+			pi += addi;
+			$(this).css('padding-right', gut*(cols-1-pi)/cols);
+
+			var pj = Math.floor(index / cols);
+			$(this).css('padding-top', gut*pj/rows);
+			$(this).css('padding-bottom', gut*(rows-1-pj)/rows);
+
+			$(this).css('width', (cw*cells[index])+'%');
+
 			if(current.ratio === 'auto'){
 				$(this).css({height: ''});
 				if(maxCh < grid.getDim($(this)).height) maxCh = grid.getDim($(this)).height;
-				if(cols !== 1 && (index+1) % cols === 0){
+				if(cols !== 1 && pi === cols - 1){
 					for(var i = index - cols + 1; i <= index; i++) $cells.eq(i).outerHeight(maxCh);
 					maxCh = 0;
 				} else if(cols !== 1 && index === length-1) {
-					for(var i = Math.floor((index+1)/cols) * cols; i <= index; i++) $cells.eq(i).outerHeight(maxCh);
+					for(var i = pj * cols; i <= index; i++) $cells.eq(i).outerHeight(maxCh);
 				}
-			} else {
-				var height = cw * current.ratio;
-				if($target.is('.es.es-nested')) height -= (gut - gut/Math.ceil(length/cols));
-				$(this).outerHeight(height);
 			}
 		});
-		if(preW != $target.outerWidth()){
-			cw = (grid.getDim($target).width - gut*(cols-1))/cols;
-			$cells.each(function(index){ $(this).outerWidth(cw*cells[index] + gut*(cells[index]-1)); });
-		}
 	}
 	Grid.prototype.adjustCellWidth = function(current, $target){
 		var gut = current.gutter;
 		var cols = current.columns;
 		var cells = current.cells;
-		var $cells = $target.children('.es.es-cell');
+		var $cells = $target.children();
 		var cw = (this.getDim($target).width - gut*(cols-1))/cols;
 		$cells.each(function(index){
 			$(this).outerWidth(cw*cells[index] + gut*(cells[index]-1));
 		});
 	}
-
 	Grid.prototype.getDimFuncs = {
 		clientrect: function($obj){
 			return $obj[0].getBoundingClientRect();
