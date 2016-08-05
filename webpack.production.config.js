@@ -1,4 +1,5 @@
 var webpack = require('webpack');
+var config = require('./config.js');
 
 module.exports = {
 	entry: config.entry,
