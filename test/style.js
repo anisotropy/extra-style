@@ -1,12 +1,13 @@
 $('.box').extraStyle({
 	ratio: 0.6
-}, 'resize', 'computed');
+}, 'resize', 'outerrect');
 
 $('.image-wrapper > img').extraStyle({
 	fitted: 'yes'
 });
 
 $.respStyle('320 768 1024 1280');
+$(window).trigger('es-setScrollbarEvent');
 
 $('.first-section, .second-section').respStyle({
 	'font-size': '16 30 50 70', // linear px

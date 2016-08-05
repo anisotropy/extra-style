@@ -24,39 +24,35 @@
 		}
 	}}
 	$.fn.respStyle = function(arg){
-		var target = this.selector;
+		var target = this;
 		if($(target).length) respStyle(target, arg);
-		else $(document).ready(function(){ respStyle(target, arg); });
+		else $(document).ready(function(){ respStyle(target.selector, arg); });
 	}
 	function respStyle(target, arg){if(target && arg){
 		$(target).each(function(){
 			var $target = $(this);
 			var style = new Style(arg);
-			$target.css(style.css());
-			$(window).resize(function(){
-				$target.css(style.css());
-			});
+			if($(this).is(':visible')) $target.css(style.css());
+			$(window).resize(function(){ if($target.is(':visible')) $target.css(style.css()); });
+			$target.on('refresh', function(){ if($target.is(':visible')) $target.css(style.css()); });
 		});
 	}}
 	$.fn.respGrid = function(arg, getDimOption){
-		var target = this.selector;
+		var target = this;
 		if($(target).length) respGrid(target, arg, getDimOption);
-		else $(document).ready(function(){ respGrid(target, arg, getDimOption); });
+		else $(document).ready(function(){ respGrid(target.selector, arg, getDimOption); });
 	}
 	function respGrid(target, arg, getDimOption){if(target && arg){
 		$(target).each(function(){
-			$(this).css('overflow', 'hidden');
-			$(this).children('div').addClass('es').addClass('es-cell').css({float: 'left', overflow: 'hidden'});
-			if($(this).is('.es.es-cell')) $(this).addClass('es-nested');
 			var $target = $(this);
+			$target.css('overflow', 'hidden');
+			$target.children('div').addClass('es').addClass('es-cell').css({float: 'left', overflow: 'hidden'});
+			if($target.is('.es.es-cell')) $target.addClass('es-nested');
 			var grid = new Grid(arg, $target.children('.es.es-cell').length, getDimOption);
-			grid.adjust($target);
-			$(window).resize(function(){
-				grid.adjust($target);
-			});
-			$(window).on('es-changeScrollbar', function(){
-				grid.adjust($target, false);
-			});
+			if($target.is(':visible')) grid.adjust($target);
+			$(window).resize(function(){ grid.adjust($target); });
+			$target.on('refresh', function(){ grid.adjust($target); });
+			$(window).on('es-changeScrollbar', function(){ grid.adjust($target, false); });
 		});
 	}}
 
@@ -169,7 +165,8 @@
 		this.findBp(bp);
 		for(var prop in data){
 			if(!this.isNotNumProp(prop)){
-				style[prop] = this.calc(data[prop], bp) + data[prop].unit;
+				var value = this.calc(data[prop], bp);
+				style[prop] = ( value !== undefined ? value + data[prop].unit : '' );
 			} else {
 				style[prop] = this.pick(data[prop].series, bp);
 			}
@@ -185,7 +182,7 @@
 	}
 	Style.prototype.pick = function(series, bp){
 		if(bp.bpi >= 0) return series[bp.bpi];
-		else if(bp.bpi == -1) return series[0];
+		else if(bp.bpi == -1) return '';
 		else if(bp.bpi == -2) return series[bp.bp.length-1];
 	}
 	Style.prototype.calc = function(propOfData, this_bp){
@@ -195,7 +192,7 @@
 		if(bpi >= 0){
 			i = bpi;
 		} else if(bpi === -1){
-			return series[0];
+			return undefined;
 		} else if(bpi === -2){
 			if(max){
 				if(func !== 'saw') return series[len-1];
@@ -244,14 +241,14 @@
 		var this_bp = { bp: undefined, bpi: 0, ww: 0 };
 		var this_current = { columns: 0, ratio: 0, gutter: 0 , cells: new Array(numCell) };
 		this.getDim = undefined;
-		this.adjust = function($target, cell){
+		this.adjust = function($target, cell){ if($target.is(':visible')){
 			if(cell === undefined || cell){
 				this.calcCurrent(this_data, this_bp, this_current);
 				this.adjustCell(this_current, $target);
 			} else {
 				this.adjustCellWidth(this_current, $target);
 			}
-		}
+		}}
 		//initialize ////
 		if(arg){
 			if(getDimOption === undefined) getDimOption = 'clientrect';
@@ -308,13 +305,14 @@
 		}
 	}
 	Grid.prototype.adjustCell = function(current, $target){
+		var grid = this;
 		var preW = $target.outerWidth();
 		var gut = current.gutter;
 		var cols = current.columns;
 		var cells = current.cells;
 		var $cells = $target.children('.es.es-cell');
 		var length = $cells.length;
-		var cw = (this.getDim($target).width - gut*(cols-1))/cols;
+		var cw = (grid.getDim($target).width - gut*(cols-1))/cols;
 		var maxCh = 0;
 		$cells.css({'margin-right': 0, 'margin-top': 0});
 		if(current.ratio !== 'auto') $cells.css({width: 0, height: 0});
@@ -325,7 +323,7 @@
 			if(index >= cols) $(this).css({'margin-top': gut});
 			if(current.ratio === 'auto'){
 				$(this).css({height: ''});
-				if(maxCh < this.getDim($(this)).height) maxCh = this.getDim($(this)).height;
+				if(maxCh < grid.getDim($(this)).height) maxCh = grid.getDim($(this)).height;
 				if(cols !== 1 && (index+1) % cols === 0){
 					for(var i = index - cols + 1; i <= index; i++) $cells.eq(i).outerHeight(maxCh);
 					maxCh = 0;
@@ -339,7 +337,7 @@
 			}
 		});
 		if(preW != $target.outerWidth()){
-			cw = (this.getDim($target).width - gut*(cols-1))/cols;
+			cw = (grid.getDim($target).width - gut*(cols-1))/cols;
 			$cells.each(function(index){ $(this).outerWidth(cw*cells[index] + gut*(cells[index]-1)); });
 		}
 	}
@@ -353,6 +351,7 @@
 			$(this).outerWidth(cw*cells[index] + gut*(cells[index]-1));
 		});
 	}
+
 	Grid.prototype.getDimFuncs = {
 		clientrect: function($obj){
 			return $obj[0].getBoundingClientRect();

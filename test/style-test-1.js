@@ -17,5 +17,11 @@
 	}, 'computed');
 
 	$(window).trigger('es-setScrollbarEvent');
+	$(document).ready(function(){
+		setTimeout(function(){
+			console.log('500');
+			$('.grid-container').trigger('refresh-resp-grid');
+		}, 500);
+	});
 
 })(jQuery);
