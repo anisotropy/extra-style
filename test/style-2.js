@@ -8,6 +8,4 @@
 	$('.third-section img').respStyle({
 		'float': 'left right left right'
 	});
-
-
 })(jQuery);

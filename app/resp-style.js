@@ -133,7 +133,6 @@
 				series[i] = (series[nni] - series[pni]) * (bp[i] - bp[pni]) / (bp[nni] - bp[pni]) + series[pni];
 			}
 		}
-
 	}
 	Style.prototype.calcEqualEach = function(propOfData){
 		var series;
@@ -218,7 +217,7 @@
 	function Grid(arg, numCell, getDimOption){
 		var this_data = {
 			columns: [], ratio: [],
-			gutter: {series: [], max: false, func: 'linear'}, //gutter의 unit은 px.
+			gutter: {series: [], max: true, func: 'linear'}, //gutter의 unit은 px.
 			cells: new Array(numCell)
 		};
 		var this_bp = { bp: undefined, bpi: 0, ww: 0 };
@@ -292,7 +291,6 @@
 	}
 	Grid.prototype.adjustCell = function(current, $target){
 		var grid = this;
-		var preW = $target.outerWidth();
 		var gut = current.gutter;
 		var cols = current.columns;
 		var cells = current.cells;
