@@ -13,7 +13,7 @@ css로 구현할 수 없는 스타일을 자바 스크립트로 구현.
 		* ```ratio: 높이/폭```
 		* ```fitted: [outer, inner, auto]```
 1. option: wait, resize, resize-once
-1. getDimFuncs: clientrect, outerrect, computed
+1. getDimFuncs: clientrect(default), outerrect, computed
 
 ### $.resyStyle(breakpoint)
 1. breakpoint
@@ -49,3 +49,4 @@ css로 구현할 수 없는 스타일을 자바 스크립트로 구현.
 		* ```ratio: '공백으로-구분되는-값 [-] [=]'```
 		* ```gutter: '공백으로-구분되는-값 [-] [=] [단위] [conti] [함수]'```
 		* ```cell인덱스: '공백으로 구분되는 값'```
+1. getDimFuncs: clientrect(default), outerrect, computed
